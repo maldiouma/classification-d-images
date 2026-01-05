@@ -1,0 +1,144 @@
+# Medical Image Classification Configuration
+# ResNet18/50 Transfer Learning for HAM10000 skin lesions
+
+# Data Configuration
+data:
+  root_dir: "./data"
+  train_dir: "./data/train"
+  val_dir: "./data/val"
+  test_dir: "./data/test"
+  image_size: 224
+  num_workers: 4
+  pin_memory: true
+
+# Model Configuration
+model:
+  name: "resnet18"  # Options: resnet18, resnet50
+  pretrained: true
+  freeze_backbone: true
+  num_classes: 7  # HAM10000 has 7 classes
+  dropout: 0.2
+
+# Stage 1: Head Training Configuration
+stage1:
+  epochs: 20
+  batch_size: 64
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  optimizer: "adam"
+  patience: 3
+  checkpoint: "./outputs/checkpoints/best.pt"
+  
+  # Data Augmentation
+  augmentation:
+    random_resized_crop: true
+    crop_size: [224, 224]
+    scale: [0.08, 1.0]
+    ratio: [0.75, 1.333]
+    horizontal_flip: 0.5
+    vertical_flip: 0.5
+    color_jitter:
+      brightness: 0.4
+      contrast: 0.4
+      saturation: 0.4
+      hue: 0.1
+    rotation: 20
+    
+  # Scheduler
+  scheduler:
+    type: "cosine"
+    warmup_epochs: 0
+    min_lr: 0.00001
+
+# Stage 2: Fine-tuning Configuration
+stage2:
+  epochs: 10
+  batch_size: 64
+  learning_rate: 0.0005
+  weight_decay: 0.0001
+  optimizer: "adam"
+  patience: 2
+  unfreeze_layer: "layer4"  # Unfreeze final residual block
+  checkpoint: "./outputs/checkpoints/best_ft.pt"
+  
+  # Same augmentation as Stage 1
+  augmentation: ${stage1.augmentation}
+  scheduler:
+    type: "cosine"
+    warmup_epochs: 0
+    min_lr: 0.00001
+
+# Training Configuration
+training:
+  seed: 42
+  device: "cuda"  # Options: cuda, cpu
+  mixed_precision: false
+  gradient_accumulation_steps: 1
+  max_grad_norm: 1.0
+  log_interval: 10
+  save_interval: 5  # Save checkpoint every N epochs
+  
+  # Early Stopping
+  early_stopping:
+    monitor: "val_loss"
+    patience: 3
+    min_delta: 0.0001
+    restore_best_weights: true
+
+# Evaluation Configuration
+evaluation:
+  metrics:
+    - accuracy
+    - precision
+    - recall
+    - f1
+    - roc_auc
+    - pr_auc
+    - calibration
+  
+  plots:
+    - confusion_matrix
+    - roc_curve
+    - pr_curve
+    - calibration_curve
+    - learning_curves
+  
+  num_bins: 10  # For calibration curves
+
+# Grad-CAM Configuration
+gradcam:
+  target_layer: "layer4"
+  method: "gradcam"  # Options: gradcam, gradcam++, xgradcam
+  use_cuda: true
+  denormalize: true
+
+# Output Configuration
+output:
+  base_dir: "./outputs"
+  checkpoints_dir: "./outputs/checkpoints"
+  results_dir: "./outputs/results"
+  plots_dir: "./outputs/plots"
+  logs_dir: "./outputs/logs"
+  save_config: true
+  save_plots: true
+  save_metrics: true
+
+# Reproducibility
+reproducibility:
+  seed: 42
+  deterministic: true
+  benchmark: false  # Set to true for speed if not concerned with reproducibility
+
+# Hardware Configuration
+hardware:
+  device: "cuda"  # Options: cuda, cpu
+  cudnn_deterministic: true
+  cudnn_benchmark: false
+  num_workers: 4
+  pin_memory: true
+
+# Class Weights Configuration
+class_weights:
+  enable: true
+  strategy: "inverse_frequency"  # Options: inverse_frequency, balanced, custom
+  normalize: true

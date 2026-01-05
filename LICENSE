@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) 2026 Aldiouma Mbaye
+Copyright (c) 2024 Medical Image Classification Contributors
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -19,3 +19,18 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+---
+
+HAM10000 Dataset License:
+
+The HAM10000 (Human Against Machine with 10000 training images) dataset is made
+available for academic and research purposes. Please refer to the original
+dataset publication for detailed licensing information:
+
+Tschandl, P., Rosendahl, C., & Kittler, H. (2018). The HAM10000 dataset, a 
+large collection of multi-source dermatoscopic images of common pigmented skin 
+lesions. Scientific Data, 5, 180161.
+
+For commercial use of the HAM10000 dataset, please contact the dataset authors
+or refer to: https://www.kaggle.com/kmader/skin-cancer-malignant-vs-benign
